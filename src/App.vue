@@ -1,47 +1,44 @@
 <script setup>
 import HelloWorld from './components/HelloWorld.vue'
 import TheWelcome from './components/TheWelcome.vue'
+import MotorBlock from './components/MotorBlock.vue'
 </script>
 
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
+    <h1>ESP32 WiFi Communication</h1>
+    <h3>motor-direccion-angulo-microstepping</h3>
   </header>
 
   <main>
-    <TheWelcome />
+    <MotorBlock />
+    
+    <div class="addMotorMovement">
+      <button> +</button>
+    </div>
+
+    <button> Enviar </button>
   </main>
 </template>
 
 <style scoped>
+h1 {
+    color: #333;
+    text-align: center;
+}
 header {
   line-height: 1.5;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+.addMotorMovement{
+  border: 2px solid red;
+  display: flex;
+  justify-content: center;
 }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+.addMotorMovement button{
+width: 10%;
+height: 30px;
 }
+
 </style>
