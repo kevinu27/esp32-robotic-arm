@@ -3,9 +3,9 @@
 
 <template>
   <div >
-    <h3>Selecciona la dirección:</h3>
       <div class="direction-buttons">
         <DirectionButton/>
+        <AngleSteppingTrasmission/>
         </div>
         {{ clockwise }}
         {{ counterClockwise }}
@@ -14,10 +14,12 @@
 
 <script>
 import DirectionButton from './DirectionButton.vue'
+import AngleSteppingTrasmission from './AngleSteppingTrasmission.vue'
 export default {
   name: 'MotorBlock',
   components: {
-    DirectionButton
+    DirectionButton,
+    AngleSteppingTrasmission
   },
     data() {
     return {
@@ -126,6 +128,8 @@ h3 {
         .direction-buttons{
           display: flex;
           justify-content: center;
+          align-items: center;
           border: 2px solid red;
+          flex-direction: column;
         }
 </style>

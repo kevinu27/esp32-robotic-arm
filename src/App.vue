@@ -6,8 +6,8 @@ import MotorBlock from './components/MotorBlock.vue'
 
 <template>
   <header>
-    <h1>ESP32 WiFi Communication</h1>
-    <h3>motor-direccion-angulo-microstepping</h3>
+    <h1>Enviar al esp32 </h1>
+    <h3>motor-direccion-angulo-microstepping-relacion de transformacion</h3>
   </header>
 
   <main>
@@ -39,6 +39,12 @@ header {
 .addMotorMovement button{
 width: 10%;
 height: 30px;
+}
+
+main {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
 }
 
 </style>
