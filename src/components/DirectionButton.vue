@@ -30,6 +30,7 @@
 </template>
 
 <script>
+import { useMotorStore } from '@/stores/motorStore'
 
 export default {
   name: 'DirectionButton',
@@ -45,7 +46,8 @@ export default {
     return {
       // titulo: 'Componente MotorBlock',
       // contador: 5,
-      // extra: 3
+      // extra: 3,
+      motorStore: useMotorStore(),
       clockwise: false,
       counterClockwise: false,
     }
@@ -56,10 +58,12 @@ export default {
         if(!this.clockwise){
           this.clockwise= true
           this.counterClockwise= false
+          this.motorStore.setDirection('1')
         }
       } else {
-        this.counterClockwise= !this.counterClockwise
-        this.clockwise= !this.clockwise
+          this.clockwise= false
+          this.counterClockwise= true
+        this.motorStore.setDirection('0')
 
 
       }

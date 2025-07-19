@@ -4,15 +4,25 @@
 <template>
   <div >
       <div class="direction-buttons">
+        <div class="motor-enable">
+
+
+          <h2>Motor 1</h2>
+          <input type="checkbox" v-model="motor1enable" />
+           <p>motor1enable: {{ motor1enable }}</p>
+        </div>
         <DirectionButton/>
         <AngleSteppingTrasmission/>
         </div>
-        {{ clockwise }}
-        {{ counterClockwise }}
+        <!-- {{ clockwise }}
+        {{ counterClockwise }} -->
+         <h2>{{ motorStore.motor1String }}</h2>
   </div>
 </template>
 
 <script>
+import { useMotorStore } from '@/stores/motorStore'
+
 import DirectionButton from './DirectionButton.vue'
 import AngleSteppingTrasmission from './AngleSteppingTrasmission.vue'
 export default {
@@ -23,11 +33,9 @@ export default {
   },
     data() {
     return {
+      motorStore: useMotorStore(),
       // titulo: 'Componente MotorBlock',
-      // contador: 5,
-      // extra: 3
-      // clockwise: false,
-      // counterClockwise: false,
+
     }
   },
   methods: {
@@ -48,88 +56,33 @@ export default {
     //   return a + b;
     // }
   },  
-
+computed: {
+  motor1enable: {
+      get() {
+        return this.motorStore.motor1enable === 1
+      },
+      set(val) {
+        this.motorStore.motor1enable = val ? 1 : 0
+      }
+    }
+  }
 
 }
 </script>
 
 <style scoped>
-h1 {
-  font-weight: 500;
-  font-size: 2.6rem;
-  position: relative;
-  top: -10px;
-}
-
-h3 {
-  font-size: 1.2rem;
-}
-
-.greetings h1,
-.greetings h3 {
-  text-align: center;
-}
-
-@media (min-width: 1024px) {
-  .greetings h1,
-  .greetings h3 {
-    text-align: left;
+  .motor-enable{
+  display: flex;
+justify-content: flex-start;
+width: 100%;
+padding-left: 1rem;
   }
-}
 
-    .botones-direccion{
-            display: flex;
-        }
-
-    .direccion {
-      padding: 10px 20px;
-      margin: 5px;
-      border: 2px solid #333;
-      border-radius: 8px;
-      background-color: white;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .direccion:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-      opacity: 0.6;
-    }
-
-    svg {
-      width: 24px;
-      height: 24px;
-    }
-
-    .invertida {
-      transform: scaleX(-1); /* Invierte horizontalmente la flecha */
-    }
-
-            button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-        }
-        .direction-buttons{
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          border: 2px solid red;
-          flex-direction: column;
-        }
+  .direction-buttons{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid red;
+    flex-direction: column;
+  }
 </style>
