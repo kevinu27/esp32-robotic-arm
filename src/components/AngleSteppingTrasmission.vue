@@ -12,12 +12,14 @@
       <option value="1600">1600</option>
       <option value="3200">3200</option>
       <option value="6400">6400</option>
+      <option value="6400">{{ id }}</option>
     </select>
   </div>
+         <h2>{{ motorStore.motor1String }}</h2>
 
-  <h2 >Valor actual en store:</h2>
+  <!-- <h2 >Valor actual en store:</h2>
   <p>Grados: {{ degrees1 }}</p>
-  <p>Stepping: {{ stepping1 }}</p>
+  <p>Stepping: {{ stepping1 }}</p> -->
 </template>
 
 <script>
@@ -31,6 +33,12 @@ export default {
       motorStore: useMotorStore(),
     }
   },    
+     props: {
+    id: {
+      type: String,
+      required: true
+    }
+  },  
   methods: {
     // setDegrees(degrees) {
     //   this.motorStore.setDegrees(degrees)

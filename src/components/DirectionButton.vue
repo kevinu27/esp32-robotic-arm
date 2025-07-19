@@ -2,31 +2,7 @@
 
 
 <template>
-  <h3>Selecciona la dirección:</h3>
-  <div class="botones">
-    
-          <div class="botones-direccion">
-        <button class="direccion" :disabled="clockwise" :class="{ 'boton-seleccionado': clockwise }" id="boton1" @click="seleccionarDirreccion('clockwise')">
-            <svg class="invertida" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="1 4 1 10 7 10"></polyline>
-            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
-            </svg>
-        </button>
-        </div>
 
-
-        <!-- Flecha circular normal -->
-         <div class="botones-direccion" >
-        <button class="direccion" :class="{ 'boton-seleccionado': counterClockwise }" id="boton2" :disabled="counterClockwise"  @click="seleccionarDirreccion('counterClockwise')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="1 4 1 10 7 10"></polyline>
-            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
-            </svg>
-        </button>
-        </div>
-        {{ clockwise }}
-        {{ counterClockwise }}
-  </div>
 </template>
 
 <script>

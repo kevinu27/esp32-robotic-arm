@@ -2,22 +2,25 @@ import { defineStore } from 'pinia'
 
 export const useMotorStore = defineStore('motor', {
   state: () => ({
-    direction1: null,
-    degrees1: 0,
-    stepping1: 200,
-    motor1enable: 0,
+    motorBaseString: '',
+    motorHombroString:'',
+    motorCodoString:'',
+    
   }),
-
-  getters: {
-    motor1String(state) {
-      return `${state.motor1enable}-${state.direction1}-${state.degrees1}-${state.stepping1}`
-    }
-  },
+ 
 
   actions: {
-      setDirection(direction){
-        console.log('clicking direction', direction)
-        this.direction1 = direction
+    setMotorBaseString(str) {
+      this.motorBaseString = str
+      console.log('this.motorBaseString', this.motorBaseString)
+    },
+        setMotorHombroString(str) {
+      this.motorHombroString = str
+      console.log('this.motorHombroString', this.motorHombroString)
+    },
+        setMotorCodoString(str) {
+      this.motorCodoString = str
+      console.log('this.motorCodoString', this.motorCodoString)
     }
   }
 })

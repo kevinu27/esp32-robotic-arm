@@ -2,31 +2,30 @@
 
 
 <template>
-      <div class="direction-buttons">
-        <div class="motor-enable">
+  <div class="motors">
+      <MotorBlockBase  />
 
-
-          <h2>Motor {{ nombreMotor }} -</h2>
-          <h2>{{ id }}</h2>
-           <!-- <p>motor1enable: {{ motor1enable }}</p> -->
-        </div>
-        <DirectionButton/>
-       <AngleSteppingTrasmission :id="id" />
-        </div>
-        <!-- {{ clockwise }}
-        {{ counterClockwise }} -->
+      <MotorBlockHombro />
+      <MotorBlockCodo  />
+  </div>
 </template>
 
 <script>
 import { useMotorStore } from '@/stores/motorStore'
+import MotorBlockBase from './MotorBlockBase.vue'
+import MotorBlockCodo from './MotorBlockCodo.vue'
+import MotorBlockHombro from './MotorBlockHombro.vue'
 
 import DirectionButton from './DirectionButton.vue'
 import AngleSteppingTrasmission from './AngleSteppingTrasmission.vue'
 export default {
-  name: 'MotorBlock',
+  name: 'MoveIndividually',
   components: {
     DirectionButton,
-    AngleSteppingTrasmission
+    AngleSteppingTrasmission,
+    MotorBlockHombro,
+    MotorBlockCodo,
+    MotorBlockBase
   },
     data() {
     return {
@@ -78,13 +77,15 @@ computed: {
 </script>
 
 <style scoped>
-  .motor-enable{
+  .motors{
   display: flex;
 justify-content: center;
 align-items: center;
 width: 100%;
 padding-left: 1rem;
-/* border: 2px solid green; */
+    flex-direction: column;
+
+border: 2px solid green;
   }
 
   .direction-buttons{
@@ -97,4 +98,10 @@ padding-left: 1rem;
     width: 100%;
 
   }
+
+  .motor-card {
+  border: 1px solid gray;
+  border-radius: 10px;
+  /* background-color: green; */
+}
 </style>
