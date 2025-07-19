@@ -1,4 +1,4 @@
-<script setup>
+<script >
 import HelloWorld from './components/HelloWorld.vue'
 import TheWelcome from './components/TheWelcome.vue'
 import MotorBlock from './components/MotorBlock.vue'
@@ -6,6 +6,31 @@ import MotorBlockBase from './components/MotorBlockBase.vue'
 import MotorBlockHombro from './components/MotorBlockHombro.vue'
 import MotorBlockCodo from './components/MotorBlockCodo.vue'
 import MoveIndividually from './components/MoveIndividually.vue'
+import { useMotorStore } from './stores/motorStore'
+// import { storeToRefs } from 'pinia'
+export default {
+  name: 'App',
+  components: {
+    HelloWorld,
+    TheWelcome,
+    MotorBlock,
+    MotorBlockBase,
+    MotorBlockHombro,
+    MotorBlockCodo,
+    MoveIndividually
+  },
+  methods: {
+    handleEnviar() {
+      const motorStore = useMotorStore()
+
+      // O puedes usar StringTotal si ya está construido
+      // const stringToSend = `${motorStore.motorBaseString}/${motorStore.motorHombroString}/${motorStore.motorCodoString}`
+
+      // Llamamos la función del store y le pasamos el string
+      motorStore.enviarString()
+    }
+  }
+}
 </script>
 
 <template>
@@ -16,11 +41,16 @@ import MoveIndividually from './components/MoveIndividually.vue'
 
   <main>
     <MoveIndividually  />
-    <button> Enviar </button>
+    <button class="MoveIndividually-button" @click="handleEnviar">Enviar</button>
   </main>
 </template>
 
 <style scoped>
+
+.MoveIndividually-button{
+  margin-bottom: 3rem;
+}
+
 h1 {
     color: #333;
     text-align: center;
