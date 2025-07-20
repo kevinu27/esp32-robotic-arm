@@ -3,11 +3,13 @@
 
 <template>
   <div class="motors">
+     <h3>direccion-angulo-microstepping</h3>
       <MotorBlockBase  />
-
       <MotorBlockHombro />
       <MotorBlockCodo  />
   </div>
+    <button class="MoveIndividually-button" @click="handleEnviarlocal">Enviar</button>
+
 </template>
 
 <script>
@@ -16,67 +18,39 @@ import MotorBlockBase from './MotorBlockBase.vue'
 import MotorBlockCodo from './MotorBlockCodo.vue'
 import MotorBlockHombro from './MotorBlockHombro.vue'
 
-import DirectionButton from './DirectionButton.vue'
-import AngleSteppingTrasmission from './AngleSteppingTrasmission.vue'
+
 export default {
   name: 'MoveIndividually',
   components: {
-    DirectionButton,
-    AngleSteppingTrasmission,
+    MotorBlockBase,
     MotorBlockHombro,
     MotorBlockCodo,
-    MotorBlockBase
   },
     data() {
     return {
       motorStore: useMotorStore(),
-      // titulo: 'Componente MotorBlock',
+
 
     }
   },  
-   props: {
-    nombreMotor: {
-      type: String,
-      required: true
-    },
-    id: {
-      type: String,
-      required: true
-    }
-  },  
+
   methods: {
-    // seleccionarDirreccion(id) {
-    //   if (id === 'clockwise') {
-    //     if(!this.clockwise){
-    //       this.clockwise= true
-    //       this.counterClockwise= false
-    //     }
-    //   } else {
-    //     this.counterClockwise= !this.counterClockwise
-    //     this.clockwise= !this.clockwise
-
-
-    //   }
-    // },
-    // sumar(a, b) {
-    //   return a + b;
-    // }
+    handleEnviarlocal() {
+      const motorStore = useMotorStore()
+      motorStore.enviarStringPositionlocal()
+    },
   },  
 computed: {
-  motor1enable: {
-      get() {
-        return this.motorStore.motor1enable === 1
-      },
-      set(val) {
-        this.motorStore.motor1enable = val ? 1 : 0
-      }
-    }
+
   }
 
 }
 </script>
 
 <style scoped>
+.MoveIndividually-button{
+  margin-bottom: 3rem;
+}
   .motors{
   display: flex;
 justify-content: center;

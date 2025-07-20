@@ -22,7 +22,7 @@ export const useMotorStore = defineStore('motor', {
       this.motorCodoString = str
       console.log('this.motorCodoString', this.motorCodoString)
     },
-    async enviarString() {
+    async enviarStringPositionlocal() {
       const ipAddress = '192.168.1.128'
       this.StringTotal = this.motorBaseString + '/' +  this.motorHombroString + '/' +  this.motorCodoString
       console.log('StringTotal/////', this.StringTotal)
@@ -60,6 +60,9 @@ export const useMotorStore = defineStore('motor', {
         } finally {
           console.log('finally')
         }
+    },
+    enviarStringPositionGlobal(str){
+      console.log('enviarStringPositionGlobal', str)
     }
   }
 })

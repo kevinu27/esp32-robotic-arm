@@ -46,7 +46,7 @@
 
 <script>
 import { useMotorStore } from '@/stores/motorStore'
-import DirectionButton from './DirectionButton.vue'
+
 
 export default {
   name: 'MotorBlockHombro',

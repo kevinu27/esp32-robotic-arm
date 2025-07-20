@@ -1,33 +1,40 @@
 <script >
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-import MotorBlock from './components/MotorBlock.vue'
+
 import MotorBlockBase from './components/MotorBlockBase.vue'
 import MotorBlockHombro from './components/MotorBlockHombro.vue'
 import MotorBlockCodo from './components/MotorBlockCodo.vue'
-import MoveIndividually from './components/MoveIndividually.vue'
+import MoveIndividually from './components/MoveLocally.vue'
+import MoveGlobally from './components/MoveGlobally.vue'
+import MoveToCoordinates from './components/MoveToCoordinates.vue'
 import { useMotorStore } from './stores/motorStore'
 // import { storeToRefs } from 'pinia'
 export default {
   name: 'App',
   components: {
-    HelloWorld,
-    TheWelcome,
-    MotorBlock,
+
     MotorBlockBase,
     MotorBlockHombro,
     MotorBlockCodo,
-    MoveIndividually
+    MoveIndividually,
+    MoveGlobally,
+    MoveToCoordinates
   },
+    data() {
+    return {
+      selectedTab: '1',
+      tabsNames: ['Mover localmente','Mover global','coordenadas']
+    }
+  },  
   methods: {
-    handleEnviar() {
+    handleEnviarlocal() {
       const motorStore = useMotorStore()
+      motorStore.enviarStringPositionlocal()
+    },
+    seleccionarTab(tab){
+      console.log('tab', tab)
+      this.selectedTab = tab
 
-      // O puedes usar StringTotal si ya está construido
-      // const stringToSend = `${motorStore.motorBaseString}/${motorStore.motorHombroString}/${motorStore.motorCodoString}`
 
-      // Llamamos la función del store y le pasamos el string
-      motorStore.enviarString()
     }
   }
 }
@@ -36,16 +43,40 @@ export default {
 <template>
   <header>
     <h1>Enviar al esp32 </h1>
-    <h3>motor-direccion-angulo-microstepping</h3>
+    <div class="tabs">
+      <button class="tab" @click="seleccionarTab('1')" >
+        <p>Mover localmente</p>
+      </button>      
+      
+      <button class="tab" @click="seleccionarTab('2')">
+        <p>Mover global</p>
+      </button>      
+
+      <button class="tab" @click="seleccionarTab('3')">
+        <p>dar coordenadas</p>
+      </button>      
+
+    </div>
+
+    {{ tabsNames[parseInt(selectedTab-1)] }}
   </header>
 
   <main>
-    <MoveIndividually  />
-    <button class="MoveIndividually-button" @click="handleEnviar">Enviar</button>
+    <MoveIndividually v-if="this.selectedTab == '1'" />
+    <MoveGlobally v-if="this.selectedTab == '2'" />
+    <MoveToCoordinates v-if="this.selectedTab == '3'" />
   </main>
 </template>
 
 <style scoped>
+.tabs{
+  display: flex;
+
+}
+.tab{
+  border: 2px solid gray;
+  padding: 1rem;
+}
 
 .MoveIndividually-button{
   margin-bottom: 3rem;
