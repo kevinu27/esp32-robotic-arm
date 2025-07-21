@@ -82,16 +82,21 @@ void handleDataReceived() {
     
     // Check if string has at least 2 characters
     if (receivedData.length() >= 2) {
-      // Split the string
+    
         int firstSep = receivedData.indexOf('/');
         int secondSep  = receivedData.indexOf('/', firstSep + 1);
         
         String motor1 = receivedData.substring(0, firstSep);
         String motor2 = receivedData.substring(firstSep + 1, secondSep);
         String motor3 = receivedData.substring(secondSep + 1);
-      // firstTwoChars = receivedData.substring(0, 2);
-      // restOfString = receivedData.substring(2);
-      
+
+
+        int firstSepMotor1 = motor1.indexOf('-');
+        int secondSepMotor1  = motor1.indexOf('-', firstSepMotor1 + 1);
+        String motor1Dir = motor1.substring(0, firstSepMotor1);
+        String motor1Angle = motor1.substring(firstSepMotor1 + 1, secondSepMotor1);
+        String motor1Stepping = motor1.substring(secondSepMotor1 + 1);
+        
       // // Print the split values
       // Serial.println("First two characters: " + firstTwoChars);
       // Serial.println("Rest of string: " + restOfString);
@@ -99,6 +104,9 @@ void handleDataReceived() {
       Serial.println("motor1: " + motor1);
       Serial.println("motor2: " + motor2);
       Serial.println("motor3: " + motor3);
+      Serial.println("motor1Dir: " + motor1Dir);
+      Serial.println("motor1Angle: " + motor1Angle);
+      Serial.println("motor1Stepping: " + motor1Stepping);
       // if(restOfString == "der"){
       //   moverMotor(true);
       // }
