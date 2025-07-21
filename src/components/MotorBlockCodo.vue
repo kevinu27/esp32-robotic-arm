@@ -76,7 +76,7 @@ export default {
       this.motorStore.setMotorCodoString(this.motorCodoString)
     },
     stepping(newVal) {
-      this.motorStore.setMotorHombroString(this.motorCodoString)
+      this.motorStore.setMotorCodoString(this.motorCodoString)
     }
   },
   mounted() {

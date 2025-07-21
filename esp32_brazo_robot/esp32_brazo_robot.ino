@@ -2,13 +2,13 @@
 #include <WiFi.h>
 #include <WebServer.h>
 
-#define STEP_PIN 18
-#define DIR_PIN 19
-#define ENABLE_PIN 21  // opcional
+#define STEP_PIN_HOMBRO 18
+#define DIR_PIN_HOMBRO 19
+#define ENABLE_PIN_HOMBRO 21  // opcional
 
-const int steps_per_rev = 200;  // 1.8° por paso
+const int steps_per_rev_hombro = 200;  // 1.8° por paso
 const float grados_a_mover = 40.0;
-const int steps_por_10_grados = 50;
+const int steps_por_10_grados_hombro = 50;
 
 // WiFi credentials
 const char* ssid = "MIWIFI_EXtU";
@@ -44,12 +44,12 @@ void setup() {
   Serial.println("Server started");
 
   //motor
-  pinMode(STEP_PIN, OUTPUT);
-  pinMode(DIR_PIN, OUTPUT);
-  pinMode(ENABLE_PIN, OUTPUT);
+  pinMode(STEP_PIN_HOMBRO, OUTPUT);
+  pinMode(DIR_PIN_HOMBRO, OUTPUT);
+  pinMode(ENABLE_PIN_HOMBRO, OUTPUT);
 
-  digitalWrite(ENABLE_PIN, HIGH); 
-  digitalWrite(DIR_PIN, LOW); 
+  digitalWrite(ENABLE_PIN_HOMBRO, HIGH); 
+  digitalWrite(DIR_PIN_HOMBRO, LOW); 
 
 }
 
@@ -83,18 +83,28 @@ void handleDataReceived() {
     // Check if string has at least 2 characters
     if (receivedData.length() >= 2) {
       // Split the string
-      firstTwoChars = receivedData.substring(0, 2);
-      restOfString = receivedData.substring(2);
+        int firstSep = receivedData.indexOf('/');
+        int secondSep  = receivedData.indexOf('/', firstSep + 1);
+        
+        String motor1 = receivedData.substring(0, firstSep);
+        String motor2 = receivedData.substring(firstSep + 1, secondSep);
+        String motor3 = receivedData.substring(secondSep + 1);
+      // firstTwoChars = receivedData.substring(0, 2);
+      // restOfString = receivedData.substring(2);
       
-      // Print the split values
-      Serial.println("First two characters: " + firstTwoChars);
-      Serial.println("Rest of string: " + restOfString);
-      if(restOfString == "der"){
-        moverMotor(true);
-      }
-       if(restOfString == "izq"){
-        moverMotor(false);
-       }
+      // // Print the split values
+      // Serial.println("First two characters: " + firstTwoChars);
+      // Serial.println("Rest of string: " + restOfString);
+
+      Serial.println("motor1: " + motor1);
+      Serial.println("motor2: " + motor2);
+      Serial.println("motor3: " + motor3);
+      // if(restOfString == "der"){
+      //   moverMotor(true);
+      // }
+      //  if(restOfString == "izq"){
+      //   moverMotor(false);
+      //  }
       
       // Create success response
       response = "{\"status\":\"success\",\"message\":\"Data processed successfully\",\"firstTwo\":\"" + firstTwoChars + "\",\"rest\":\"" + restOfString + "\"}";
@@ -116,13 +126,13 @@ void handleDataReceived() {
 }
 
 void moverMotor(bool direccion) {
-  digitalWrite(DIR_PIN, direccion ? HIGH : LOW);
+  digitalWrite(DIR_PIN_HOMBRO, direccion ? HIGH : LOW);
 
-  for (int i = 0; i < steps_por_10_grados; i++) {
+  for (int i = 0; i < steps_por_10_grados_hombro; i++) {
      Serial.println("lopp ");
-    digitalWrite(STEP_PIN, HIGH);
+    digitalWrite(STEP_PIN_HOMBRO, HIGH);
     delay(100); // velocidad del motor
-    digitalWrite(STEP_PIN, LOW);
+    digitalWrite(STEP_PIN_HOMBRO, LOW);
     delay(100);
   }
 
