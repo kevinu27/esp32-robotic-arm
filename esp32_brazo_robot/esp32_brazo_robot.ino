@@ -17,12 +17,16 @@
         int firstSepMotor2 ;
         int secondSepMotor2 ;
         String motor2Dir;
-        int motor2Angle ;
-        int motor2Stepping ;
+        String motor2Angle ;
+        int motor2SteppingInt ;
         bool motor1BaseInTarget = false;
         bool motor2HomrboInTarget = false;
         bool motor3CodoInTarget = false;
-        int relacionTrasmisionMotor2Hombro = 4;
+        int relacionTrasmisionMotor2Hombro = 5;
+        int steppingDivision;
+        int motor2AngleInt = 0;
+        int stepsToMove = 0;
+        int stepsToMoveWithTRansmision = 1;
 
 const int steps_per_rev_hombro = 200;  // 1.8° por paso
 const float grados_a_mover = 40.0;
@@ -117,18 +121,24 @@ void handleDataReceived() {
         
 
         firstSepMotor2 = motor2Hombro.indexOf('-');
-      secondSepMotor2  = motor2Hombro.indexOf('-', firstSepMotor2 + 1);
+        secondSepMotor2  = motor2Hombro.indexOf('-', firstSepMotor2 + 1);
         motor2Dir = motor2Hombro.substring(0, firstSepMotor2);
-      motor2Angle = motor2Hombro.substring(firstSepMotor2 + 1, secondSepMotor2).toInt();
-      motor2Stepping = motor2Hombro.substring(secondSepMotor2 + 1).toInt();
-
-
+        motor2Angle = motor2Hombro.substring(firstSepMotor2 + 1, secondSepMotor2);
+        motor2AngleInt = motor2Angle.toInt();
+        Serial.print("motor2AngleInt: " );
+        Serial.println(motor2AngleInt);
+        motor2SteppingInt = motor2Hombro.substring(secondSepMotor2 + 1).toInt();
+        Serial.print("motor2SteppingInt: " );
+        Serial.println(motor2SteppingInt);
+        stepsToMove = (motor2AngleInt * motor2SteppingInt) / 360;
+        stepsToMoveWithTRansmision = stepsToMove * relacionTrasmisionMotor2Hombro ;
+        
         int firstSepMotor3 = motor3Codo.indexOf('-');
         int secondSepMotor3  = motor3Codo.indexOf('-', firstSepMotor3 + 1);
         String motor3Dir = motor3Codo.substring(0, firstSepMotor3);
         String motor3Angle = motor3Codo.substring(firstSepMotor3 + 1, secondSepMotor3);
         String motor3Stepping = motor3Codo.substring(secondSepMotor3 + 1);
-
+        
       // // Print the split values
       // Serial.println("First two characters: " + firstTwoChars);
       // Serial.println("Rest of string: " + restOfString);
@@ -138,13 +148,17 @@ void handleDataReceived() {
       Serial.println("motor3Codo: " + motor3Codo);
       Serial.println("motor2Dir: " + motor2Dir);
       Serial.println("motor2Angle: " + motor2Angle);
-      Serial.println("motor2Stepping: " + motor2Stepping);
+      Serial.println("motor2SteppingInt: " + motor2SteppingInt);
       
-       if(motor2Angle != 0 or motor1Angle != 0 or motor3Angle != 0 ){
+       if(motor2AngleInt > 0 ){
          moverMotor();
        }
 
-      
+//            
+//       if(motor2AngleInt > 0 or motor1Angle > 0 or motor3Angle > 0 ){
+//         moverMotor();
+//       }
+
       // Create success response
       response = "{\"status\":\"success\",\"message\":\"Data processed successfully\",\"firstTwo\":\"" + firstTwoChars + "\",\"rest\":\"" + restOfString + "\"}";
       
@@ -166,16 +180,16 @@ void handleDataReceived() {
 
 void moverMotor() {
   if(motor2Dir == "0"){
-    Serial.println("en el if de (motor2Dir == 1): " );
+    Serial.println("en el if de (motor2Dir == 0): " );
     digitalWrite(DIR_PIN_HOMBRO, LOW); 
     }
    if(motor2Dir == "1"){
-      Serial.println("en el if de (motor2Dir == 0): " );
+      Serial.println("en el if de (motor2Dir == 1): " );
       digitalWrite(DIR_PIN_HOMBRO, HIGH); 
       }
- 
 
-  for (int i = 0; i < motor2Angle; i++) {
+ 
+  for (int i = 0; i < stepsToMoveWithTRansmision; i++) {
      Serial.println("lopp ");
     digitalWrite(STEP_PIN_HOMBRO, HIGH);
     delayMicroseconds(100); // velocidad del motor
