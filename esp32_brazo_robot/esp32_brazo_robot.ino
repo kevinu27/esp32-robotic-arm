@@ -308,8 +308,6 @@ void moverMotor() {
       delayMicroseconds(100); // velocidad del motor
       digitalWrite(STEP_PIN_CODO, LOW);
       delayMicroseconds(100);
-      
-      Serial.println("stepsToMoveWithTRansmision3CodoRemaining" + stepsToMoveWithTRansmision3CodoRemaining);
       stepsToMoveWithTRansmision3CodoRemaining =stepsToMoveWithTRansmision3CodoRemaining - 1;
       if(stepsToMoveWithTRansmision3CodoRemaining < 1){
         Serial.print("******" + stepsToMoveWithTRansmision3CodoRemaining );
