@@ -1,6 +1,8 @@
 
 #include <WiFi.h>
 #include <WebServer.h>
+#define LIMIT_SWITCH_CODO_PIN 4
+#define LIMIT_SWITCH_HOMBRO_PIN 5
 
 #define STEP_PIN_BASE 15
 #define DIR_PIN_BASE 16
@@ -35,7 +37,7 @@
         bool motor2HomrboInTarget = false;
         bool motor3CodoInTarget = false;
 
-        int relacionTrasmisionMotor1Base = 5;
+        int relacionTrasmisionMotor1Base = 2;
         int motor1AngleInt = 0;
         int stepsToMove1 = 0;
         int stepsToMoveWithTRansmision1Base = 1;
@@ -47,7 +49,7 @@
         int stepsToMoveWithTRansmision = 1;
         int stepsToMoveWithTRansmisionRemaining = 0;
         
-        int relacionTrasmisionMotor3Codo = 1;
+        int relacionTrasmisionMotor3Codo = 5;
         int motor3AngleInt = 0;
         int stepsToMove3 = 0;
         int stepsToMoveWithTRansmision3Codo = 1;
@@ -104,10 +106,19 @@ void setup() {
   digitalWrite(DIR_PIN_BASE, LOW);
   digitalWrite(DIR_PIN_HOMBRO, LOW);
   digitalWrite(DIR_PIN_CODO, LOW);
+
+  pinMode(LIMIT_SWITCH_CODO_PIN, INPUT_PULLUP); 
+  pinMode(LIMIT_SWITCH_HOMBRO_PIN, INPUT_PULLUP); 
 }
 
 void loop() {
   server.handleClient();
+    if (digitalRead(LIMIT_SWITCH_HOMBRO_PIN) == LOW) {
+    Serial.println("BASE activado");
+  } else {
+    Serial.println("BASE inactivo");
+  }
+  delay(500);
 }
 
 void handleOptions() {
@@ -253,11 +264,11 @@ void handleDataReceived() {
 void moverMotor() {
   if(motor1Dir == "0"){
     Serial.println("en el if de (motor1Dir == 0): " );
-    digitalWrite(DIR_PIN_BASE, LOW); 
+    digitalWrite(DIR_PIN_BASE, HIGH); 
     }
   if(motor1Dir == "1"){
       Serial.println("en el if de (motor1Dir == 1): " );
-      digitalWrite(DIR_PIN_BASE, HIGH); 
+      digitalWrite(DIR_PIN_BASE, LOW); 
     }
 
   if(motor2Dir == "0"){
