@@ -33,8 +33,9 @@ export default {
     seleccionarTab(tab){
       console.log('tab', tab)
       this.selectedTab = tab
-
-
+    },
+    homing(){
+      console.log('homing')
     }
   }
 }
@@ -54,6 +55,13 @@ export default {
 
       <button class="tab" @click="seleccionarTab('3')">
         <p>dar coordenadas</p>
+      </button>
+      <button class="homing-btn" @click="homing()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 12L12 3L21 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M5 10V20C5 20.5523 5.44772 21 6 21H9V16C9 15.4477 9.44772 15 10 15H14C14.5523 15 15 15.4477 15 16V21H18C18.5523 21 19 20.5523 19 20V10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="9" y="15" width="6" height="6" fill="none" stroke="currentColor" stroke-width="2"/>
+        </svg>
       </button>      
 
     </div>
@@ -65,6 +73,7 @@ export default {
     <MoveIndividually v-if="this.selectedTab == '1'" />
     <MoveGlobally v-if="this.selectedTab == '2'" />
     <MoveToCoordinates v-if="this.selectedTab == '3'" />
+
   </main>
 </template>
 
