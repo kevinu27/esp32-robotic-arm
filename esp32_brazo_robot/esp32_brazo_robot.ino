@@ -3,6 +3,7 @@
 #include <WebServer.h>
 #define LIMIT_SWITCH_CODO_PIN 4
 #define LIMIT_SWITCH_HOMBRO_PIN 5
+#define LIMIT_SWITCH_BASE_PIN 14
 
 #define STEP_PIN_BASE 15
 #define DIR_PIN_BASE 16
@@ -109,16 +110,30 @@ void setup() {
 
   pinMode(LIMIT_SWITCH_CODO_PIN, INPUT_PULLUP); 
   pinMode(LIMIT_SWITCH_HOMBRO_PIN, INPUT_PULLUP); 
+  pinMode(LIMIT_SWITCH_BASE_PIN, INPUT_PULLUP); 
 }
 
 void loop() {
   server.handleClient();
-    if (digitalRead(LIMIT_SWITCH_HOMBRO_PIN) == LOW) {
-    Serial.println("BASE activado");
-  } else {
-    Serial.println("BASE inactivo");
-  }
-  delay(500);
+//    if (digitalRead(LIMIT_SWITCH_CODO_PIN) == LOW) {
+//    Serial.println("CODO activado");
+//  } else {
+//    Serial.println("CODO inactivo");
+//  }
+//  // ----
+//    if (digitalRead(LIMIT_SWITCH_HOMBRO_PIN) == LOW) {
+//    Serial.println("HOMBRO activado");
+//  } else {
+//    Serial.println("HOMBRO inactivo");
+//  }
+//    // ----
+//    if (digitalRead(LIMIT_SWITCH_BASE_PIN) == LOW) {
+//    Serial.println("BASE activado");
+//  } else {
+//    Serial.println("BASE inactivo");
+//  }
+//  Serial.println("///////-----");
+  // delay(500);
 }
 
 void handleOptions() {
@@ -292,36 +307,46 @@ void moverMotor() {
   while (motor1BaseInTarget == false || motor2HomrboInTarget == false || motor3CodoInTarget == false) {
     Serial.println("lopp ");
 
-    if(motor1BaseInTarget == false){
+    if(motor1BaseInTarget == false ){
       digitalWrite(STEP_PIN_BASE, HIGH);
-      delayMicroseconds(100); // velocidad del motor
+      delayMicroseconds(100); 
       digitalWrite(STEP_PIN_BASE, LOW);
       delayMicroseconds(100);
       stepsToMoveWithTRansmision1BaseRemaining = stepsToMoveWithTRansmision1BaseRemaining - 1;
       if(stepsToMoveWithTRansmision1BaseRemaining < 1){
         motor1BaseInTarget = true;
       }
+      if(digitalRead(LIMIT_SWITCH_BASE_PIN) == LOW && motor1Dir == "1"){
+        motor1BaseInTarget = true;
+      }
     }
 
-    if(motor2HomrboInTarget == false){
+    if(motor2HomrboInTarget == false ){
       digitalWrite(STEP_PIN_HOMBRO, HIGH);
-      delayMicroseconds(100); // velocidad del motor
+      delayMicroseconds(100); 
       digitalWrite(STEP_PIN_HOMBRO, LOW);
       delayMicroseconds(100);
       stepsToMoveWithTRansmisionRemaining =stepsToMoveWithTRansmisionRemaining - 1;
       if(stepsToMoveWithTRansmisionRemaining < 1){
         motor2HomrboInTarget = true;
       }
+      if(digitalRead(LIMIT_SWITCH_HOMBRO_PIN) == LOW && motor2Dir == "1"){
+        motor2HomrboInTarget = true;
+      }
     }
 
-    if(motor3CodoInTarget == false){
+    if(motor3CodoInTarget == false ){
       digitalWrite(STEP_PIN_CODO, HIGH);
-      delayMicroseconds(100); // velocidad del motor
+      delayMicroseconds(100);
       digitalWrite(STEP_PIN_CODO, LOW);
       delayMicroseconds(100);
       stepsToMoveWithTRansmision3CodoRemaining =stepsToMoveWithTRansmision3CodoRemaining - 1;
       if(stepsToMoveWithTRansmision3CodoRemaining < 1){
         Serial.print("******" + stepsToMoveWithTRansmision3CodoRemaining );
+        motor3CodoInTarget = true;
+      }
+      if(digitalRead(LIMIT_SWITCH_CODO_PIN) == HIGH && motor3Dir == "1"){
+        Serial.print("******");
         motor3CodoInTarget = true;
       }
     }
