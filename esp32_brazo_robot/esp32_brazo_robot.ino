@@ -56,6 +56,11 @@
         int stepsToMoveWithTRansmision3Codo = 1;
         int stepsToMoveWithTRansmision3CodoRemaining = 0;
 
+float baseAngle ;
+float hombroAngle ;
+float codoAngle ;
+
+
 // WiFi credentials
 const char* ssid = "MIWIFI_EXtU";
 const char* password = "4GFCfAfR";
@@ -85,6 +90,10 @@ void setup() {
   server.on("/sendData", HTTP_POST, handleDataReceived);
   // Route to handle preflight requests
   server.on("/sendData", HTTP_OPTIONS, handleOptions);
+
+  server.on("/homing", HTTP_POST, homing);
+
+  
   // Start server
   server.begin();
   Serial.println("Server started");
@@ -276,6 +285,76 @@ void handleDataReceived() {
   Serial.print("handleDataReceived end");
 }
 
+void homing() {
+  Serial.println("Homing");
+  
+  bool motor1BaseInTarget = false;
+  bool motor3CodoInTarget = false;
+  bool motor2HomrboInTarget = false;
+  
+  bool pinBase = digitalRead(LIMIT_SWITCH_BASE_PIN);
+  bool pinCodo = digitalRead(LIMIT_SWITCH_CODO_PIN);
+  bool pinHombro = digitalRead(LIMIT_SWITCH_HOMBRO_PIN);
+  
+Serial.println("pinBase");
+Serial.println( pinBase);
+Serial.println("pinCodo");
+Serial.println( pinCodo);
+Serial.println("pinHombro");
+Serial.println(pinHombro);
+  
+  if(digitalRead(LIMIT_SWITCH_BASE_PIN) == LOW){
+    Serial.print("entro en el if de la base");
+    motor1BaseInTarget = true;
+  }
+  if(digitalRead(LIMIT_SWITCH_CODO_PIN) == HIGH ){
+    Serial.print("entro en el if de la codo");
+    motor3CodoInTarget = true;
+  }
+  if(digitalRead(LIMIT_SWITCH_HOMBRO_PIN) == LOW ){
+    Serial.print("entro en el if de la hombro");
+    motor2HomrboInTarget = true;
+  }
+  
+  digitalWrite(DIR_PIN_BASE, LOW);
+  digitalWrite(DIR_PIN_HOMBRO, HIGH); 
+  digitalWrite(DIR_PIN_CODO, HIGH); 
+
+  while (motor1BaseInTarget == false ) {
+    if(digitalRead(LIMIT_SWITCH_BASE_PIN) == LOW){
+      motor1BaseInTarget = true;
+      break;
+    }
+    digitalWrite(STEP_PIN_BASE, HIGH);
+    delayMicroseconds(200); 
+    digitalWrite(STEP_PIN_BASE, LOW);
+    delayMicroseconds(200);
+  }
+
+  while (motor3CodoInTarget == false ) {
+      if(digitalRead(LIMIT_SWITCH_CODO_PIN) == HIGH ){
+        motor3CodoInTarget = true;
+        break;
+      }
+      digitalWrite(STEP_PIN_CODO, HIGH);
+      delayMicroseconds(200);
+      digitalWrite(STEP_PIN_CODO, LOW);
+      delayMicroseconds(200);
+  }
+
+    while (motor2HomrboInTarget == false ) {
+       if(digitalRead(LIMIT_SWITCH_HOMBRO_PIN) == LOW ){
+        motor2HomrboInTarget = true;
+        break;
+      }
+      digitalWrite(STEP_PIN_HOMBRO, HIGH);
+      delayMicroseconds(200); 
+      digitalWrite(STEP_PIN_HOMBRO, LOW);
+      delayMicroseconds(200);
+  }
+
+}
+
 void moverMotor() {
   if(motor1Dir == "0"){
     Serial.println("en el if de (motor1Dir == 0): " );
@@ -303,7 +382,12 @@ void moverMotor() {
       Serial.println("en el if de (motor3Dir == 1): " );
       digitalWrite(DIR_PIN_CODO, HIGH); 
     }
-
+Serial.println("motor1BaseInTarget "  );
+Serial.println(motor1BaseInTarget);
+Serial.println("motor2HomrboInTarget ");
+Serial.println(motor2HomrboInTarget);
+Serial.println("motor3CodoInTarget "  );
+Serial.println( motor3CodoInTarget  );
   while (motor1BaseInTarget == false || motor2HomrboInTarget == false || motor3CodoInTarget == false) {
     Serial.println("lopp ");
 
@@ -351,14 +435,6 @@ void moverMotor() {
       }
     }
   }
-
-  // for (int i = 0; i < stepsToMoveWithTRansmision; i++) {
-  //    Serial.println("lopp ");
-  //   digitalWrite(STEP_PIN_HOMBRO, HIGH);
-  //   delayMicroseconds(100); // velocidad del motor
-  //   digitalWrite(STEP_PIN_HOMBRO, LOW);
-  //   delayMicroseconds(100);
-  // }
 
   Serial.println("Motor movido ");
 

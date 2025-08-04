@@ -34,8 +34,44 @@ export default {
       console.log('tab', tab)
       this.selectedTab = tab
     },
-    homing(){
-      console.log('homing')
+    async homing(){
+      console.log('homing')      
+      const ipAddress = '192.168.1.128'
+
+
+      try {
+            const url = `http://${ipAddress}/homing`;
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `data=${encodeURIComponent(this.StringTotal)}`
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok && result.status === 'success') {
+                console.log(`
+                    <strong>Success!</strong><br>
+                    Message: ${result.message}<br>
+                    First two characters: "${result.firstTwo}"<br>
+                    Rest of string: "${result.rest}"
+                `, 'success');
+            } else {
+                 console.log(`<strong>Error:</strong> ${result.message}`, 'error');
+            }
+            
+        } catch (error) {
+            console.error('Error:', error);
+             console.log(`<strong>Connection Error:</strong> Could not connect to ESP32. 
+                        Please check:<br>
+                        • ESP32 IP address is correct<br>
+                        • ESP32 is connected to WiFi<br>
+                        • You're on the same network`, 'error');
+        } finally {
+          console.log('finally')
+        }
     }
   }
 }
