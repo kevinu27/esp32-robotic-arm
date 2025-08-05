@@ -28,19 +28,20 @@ export default {
     data() {
     return {
       motorStore: useMotorStore(),
-      degrees1: null,
-      degrees2: null,
-      degrees3: null,
-
+      degrees1: 500,
+      degrees2: 500,
+      degrees3: 500,
     }
   },  
 
   methods: {
     handleEnviarGlobal() {
       const motorStore = useMotorStore()
+      console.log('this.stringAngulosGlobal', this.stringAngulosGlobal)
       motorStore.enviarStringPositionGlobal(this.stringAngulosGlobal)
     },
-  },  
+  },
+
 computed: {
     stringAngulosGlobal:{
           get() {

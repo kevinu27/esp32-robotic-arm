@@ -93,6 +93,10 @@ void setup() {
 
   server.on("/homing", HTTP_POST, homing);
 
+  server.on("/movetoposition", HTTP_POST, moveToPosition);
+  server.on("/movetoposition", HTTP_OPTIONS, handleOptions);
+
+
   
   // Start server
   server.begin();
@@ -124,25 +128,7 @@ void setup() {
 
 void loop() {
   server.handleClient();
-//    if (digitalRead(LIMIT_SWITCH_CODO_PIN) == LOW) {
-//    Serial.println("CODO activado");
-//  } else {
-//    Serial.println("CODO inactivo");
-//  }
-//  // ----
-//    if (digitalRead(LIMIT_SWITCH_HOMBRO_PIN) == LOW) {
-//    Serial.println("HOMBRO activado");
-//  } else {
-//    Serial.println("HOMBRO inactivo");
-//  }
-//    // ----
-//    if (digitalRead(LIMIT_SWITCH_BASE_PIN) == LOW) {
-//    Serial.println("BASE activado");
-//  } else {
-//    Serial.println("BASE inactivo");
-//  }
-//  Serial.println("///////-----");
-  // delay(500);
+
 }
 
 void handleOptions() {
@@ -156,7 +142,7 @@ void handleOptions() {
 
 void handleDataReceived() {
   // Add CORS headers
-   Serial.print("handleDataReceived");
+  Serial.print("handleDataReceived");
   server.sendHeader("Access-Control-Allow-Origin", "*");
   server.sendHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   server.sendHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -181,9 +167,9 @@ void handleDataReceived() {
 
         int firstSepMotor1 = motor1Base.indexOf('-');
         int secondSepMotor1  = motor1Base.indexOf('-', firstSepMotor1 + 1);
-         motor1Dir = motor1Base.substring(0, firstSepMotor1);
-         motor1Angle = motor1Base.substring(firstSepMotor1 + 1, secondSepMotor1);
-         motor1SteppingInt = motor1Base.substring(secondSepMotor1 + 1).toInt();
+        motor1Dir = motor1Base.substring(0, firstSepMotor1);
+        motor1Angle = motor1Base.substring(firstSepMotor1 + 1, secondSepMotor1);
+        motor1SteppingInt = motor1Base.substring(secondSepMotor1 + 1).toInt();
         motor1AngleInt = motor1Angle.toInt();
         Serial.print("motor1AngleInt: " );
         Serial.println(motor1AngleInt);
@@ -210,10 +196,10 @@ void handleDataReceived() {
         
         int firstSepMotor3 = motor3Codo.indexOf('-');
         int secondSepMotor3  = motor3Codo.indexOf('-', firstSepMotor3 + 1);
-         motor3Dir = motor3Codo.substring(0, firstSepMotor3);
-         motor3Angle = motor3Codo.substring(firstSepMotor3 + 1, secondSepMotor3);
-         motor3SteppingInt = motor3Codo.substring(secondSepMotor3 + 1).toInt();
-         motor3AngleInt = motor3Angle.toInt();
+        motor3Dir = motor3Codo.substring(0, firstSepMotor3);
+        motor3Angle = motor3Codo.substring(firstSepMotor3 + 1, secondSepMotor3);
+        motor3SteppingInt = motor3Codo.substring(secondSepMotor3 + 1).toInt();
+        motor3AngleInt = motor3Angle.toInt();
         Serial.print("dir///" + motor3Dir );
         Serial.println(motor3Dir);
         Serial.print("motor3SteppingInt: " );
@@ -282,11 +268,55 @@ void handleDataReceived() {
     response = "{\"status\":\"error\",\"message\":\"No data received\"}";
     server.send(400, "application/json", response);
   }
-  Serial.print("handleDataReceived end");
+  Serial.print("handleDataReceived end del handleDataReceived");
 }
+
+void moveToPosition() {
+  server.sendHeader("Access-Control-Allow-Origin", "*");
+  server.sendHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  server.sendHeader("Access-Control-Allow-Headers", "Content-Type");
+  Serial.println("moveToPosition");
+  String response = "";
+  
+  if (server.hasArg("data")) {
+    String receivedData = server.arg("data");
+    
+    Serial.println("Received data en el moveToPosition: " + receivedData);
+    
+    // Check if string has at least 2 characters
+    if (receivedData.length() >= 2) {
+    
+        int firstSep = receivedData.indexOf('/');
+        int secondSep  = receivedData.indexOf('/', firstSep + 1);
+        
+        String motor1Base = receivedData.substring(0, firstSep);
+        String motor2Hombro = receivedData.substring(firstSep + 1, secondSep);
+        String motor3Codo = receivedData.substring(secondSep + 1); 
+
+
+      // Create success response
+      response = "{\"status\":\"success\",\"message\":\"Data processed successfully\",\"firstTwo\":\"" + firstTwoChars + "\",\"rest\":\"" + restOfString + "\"}";
+      
+      server.send(200, "application/json", response);
+    } else {
+      // Error: string too short
+      Serial.println("Error: String too short (less than 2 characters)");
+      response = "{\"status\":\"error\",\"message\":\"String must have at least 2 characters\"}";
+      server.send(400, "application/json", response);
+    }
+  } else {
+    // Error: no data received
+    Serial.println("Error: No data received");
+    response = "{\"status\":\"error\",\"message\":\"No data received\"}";
+    server.send(400, "application/json", response);
+  }
+  Serial.print(" end del moveToPosition");
+}
+
 
 void homing() {
   Serial.println("Homing");
+
   
   bool motor1BaseInTarget = false;
   bool motor3CodoInTarget = false;
@@ -306,13 +336,18 @@ Serial.println(pinHombro);
   if(digitalRead(LIMIT_SWITCH_BASE_PIN) == LOW){
     Serial.print("entro en el if de la base");
     motor1BaseInTarget = true;
+    baseAngle = 90.0;
+
   }
   if(digitalRead(LIMIT_SWITCH_CODO_PIN) == HIGH ){
     Serial.print("entro en el if de la codo");
     motor3CodoInTarget = true;
+    codoAngle =100.0;
+
   }
   if(digitalRead(LIMIT_SWITCH_HOMBRO_PIN) == LOW ){
     Serial.print("entro en el if de la hombro");
+    hombroAngle = 180.0;
     motor2HomrboInTarget = true;
   }
   
@@ -323,6 +358,7 @@ Serial.println(pinHombro);
   while (motor1BaseInTarget == false ) {
     if(digitalRead(LIMIT_SWITCH_BASE_PIN) == LOW){
       motor1BaseInTarget = true;
+      baseAngle = 90.0;
       break;
     }
     digitalWrite(STEP_PIN_BASE, HIGH);
@@ -334,6 +370,7 @@ Serial.println(pinHombro);
   while (motor3CodoInTarget == false ) {
       if(digitalRead(LIMIT_SWITCH_CODO_PIN) == HIGH ){
         motor3CodoInTarget = true;
+        codoAngle =100.0;
         break;
       }
       digitalWrite(STEP_PIN_CODO, HIGH);
@@ -345,6 +382,7 @@ Serial.println(pinHombro);
     while (motor2HomrboInTarget == false ) {
        if(digitalRead(LIMIT_SWITCH_HOMBRO_PIN) == LOW ){
         motor2HomrboInTarget = true;
+        hombroAngle = 180.0;
         break;
       }
       digitalWrite(STEP_PIN_HOMBRO, HIGH);
@@ -399,9 +437,13 @@ Serial.println( motor3CodoInTarget  );
       stepsToMoveWithTRansmision1BaseRemaining = stepsToMoveWithTRansmision1BaseRemaining - 1;
       if(stepsToMoveWithTRansmision1BaseRemaining < 1){
         motor1BaseInTarget = true;
+        if(baseAngle >0){
+          baseAngle = baseAngle + motor1AngleInt;
+        }
       }
       if(digitalRead(LIMIT_SWITCH_BASE_PIN) == LOW && motor1Dir == "1"){
         motor1BaseInTarget = true;
+        baseAngle = 90.0;
       }
     }
 
@@ -413,9 +455,13 @@ Serial.println( motor3CodoInTarget  );
       stepsToMoveWithTRansmisionRemaining =stepsToMoveWithTRansmisionRemaining - 1;
       if(stepsToMoveWithTRansmisionRemaining < 1){
         motor2HomrboInTarget = true;
+        if( hombroAngle> 0){
+          hombroAngle = hombroAngle + motor2AngleInt;
+        }
       }
       if(digitalRead(LIMIT_SWITCH_HOMBRO_PIN) == LOW && motor2Dir == "1"){
         motor2HomrboInTarget = true;
+        hombroAngle = 180.0;
       }
     }
 
@@ -429,9 +475,13 @@ Serial.println( motor3CodoInTarget  );
         Serial.print("******" + stepsToMoveWithTRansmision3CodoRemaining );
         motor3CodoInTarget = true;
       }
+      if(codoAngle < 0){
+        codoAngle = codoAngle + motor3AngleInt;
+      }
       if(digitalRead(LIMIT_SWITCH_CODO_PIN) == HIGH && motor3Dir == "1"){
         Serial.print("******");
         motor3CodoInTarget = true;
+        codoAngle =100.0;
       }
     }
   }
