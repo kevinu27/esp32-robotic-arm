@@ -281,24 +281,36 @@ void moveToPosition() {
   if (server.hasArg("data")) {
     String receivedData = server.arg("data");
     
-    Serial.println("Received data en el moveToPosition: " + receivedData);
+    Serial.println("Received data en el moveToPosition-----: " + receivedData);
     
+    receivedData.trim();
     // Check if string has at least 2 characters
-    if (receivedData.length() >= 2) {
-    
-        int firstSep = receivedData.indexOf('/');
-        int secondSep  = receivedData.indexOf('/', firstSep + 1);
-        
-        String motor1Base = receivedData.substring(0, firstSep);
-        String motor2Hombro = receivedData.substring(firstSep + 1, secondSep);
-        String motor3Codo = receivedData.substring(secondSep + 1); 
+    // for (int i = 0; i < receivedData.length(); i++) {
+    //   Serial.print("Char ");
+    //   Serial.print(i);
+    //   Serial.print(": ");
+    //   Serial.print(receivedData[i]);
+    //   Serial.print(" (ASCII: ");
+    //   Serial.print((int)receivedData[i]);
+    //   Serial.println(")");
+    // }
+   if (receivedData.length() >= 5 && receivedData.indexOf('/') > 0) {
+      Serial.println("Entró al if correctamente");
 
+      int firstSlash = receivedData.indexOf('/');
+      int secondSlash = receivedData.indexOf('/', firstSlash + 1);
 
-      // Create success response
-      response = "{\"status\":\"success\",\"message\":\"Data processed successfully\",\"firstTwo\":\"" + firstTwoChars + "\",\"rest\":\"" + restOfString + "\"}";
-      
+      int baseGlobalTargetAngle = receivedData.substring(0, firstSlash).toInt();
+      int hombroGlobalTargetAngle = receivedData.substring(firstSlash + 1, secondSlash).toInt();
+      int codoGlobalTargetAngle = receivedData.substring(secondSlash + 1).toInt();
+
+      Serial.println("baseGlobalTargetAngle: " + String(baseGlobalTargetAngle));
+      Serial.println("hombroGlobalTargetAngle: " + String(hombroGlobalTargetAngle));
+      Serial.println("codoGlobalTargetAngle: " + String(codoGlobalTargetAngle));
+
+      response = "{\"status\":\"success\",\"message\":\"Data processed successfully\"}";
       server.send(200, "application/json", response);
-    } else {
+    }else {
       // Error: string too short
       Serial.println("Error: String too short (less than 2 characters)");
       response = "{\"status\":\"error\",\"message\":\"String must have at least 2 characters\"}";
@@ -306,7 +318,7 @@ void moveToPosition() {
     }
   } else {
     // Error: no data received
-    Serial.println("Error: No data received");
+    Serial.println("Error: No data received moveToPosition");
     response = "{\"status\":\"error\",\"message\":\"No data received\"}";
     server.send(400, "application/json", response);
   }
