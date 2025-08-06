@@ -55,6 +55,9 @@
         int stepsToMove3 = 0;
         int stepsToMoveWithTRansmision3Codo = 1;
         int stepsToMoveWithTRansmision3CodoRemaining = 0;
+        float baseDiffAngle;
+        float hombroDiffAngle;
+        float codoDiffAngle;
 
 float baseAngle ;
 float hombroAngle ;
@@ -284,16 +287,7 @@ void moveToPosition() {
     Serial.println("Received data en el moveToPosition-----: " + receivedData);
     
     receivedData.trim();
-    // Check if string has at least 2 characters
-    // for (int i = 0; i < receivedData.length(); i++) {
-    //   Serial.print("Char ");
-    //   Serial.print(i);
-    //   Serial.print(": ");
-    //   Serial.print(receivedData[i]);
-    //   Serial.print(" (ASCII: ");
-    //   Serial.print((int)receivedData[i]);
-    //   Serial.println(")");
-    // }
+
    if (receivedData.length() >= 5 && receivedData.indexOf('/') > 0) {
       Serial.println("Entró al if correctamente");
 
@@ -303,6 +297,34 @@ void moveToPosition() {
       int baseGlobalTargetAngle = receivedData.substring(0, firstSlash).toInt();
       int hombroGlobalTargetAngle = receivedData.substring(firstSlash + 1, secondSlash).toInt();
       int codoGlobalTargetAngle = receivedData.substring(secondSlash + 1).toInt();
+
+      if(baseGlobalTargetAngle < 500){
+        baseDiffAngle = baseGlobalTargetAngle - baseAngle;
+        // llama a la funcion que mueve  el motor los angulos que toca
+        Serial.println("baseDiffAngle");
+        Serial.println(baseDiffAngle);
+        motorToAngle(1, baseDiffAngle);
+      }
+
+      if(hombroGlobalTargetAngle < 500){
+        hombroDiffAngle = hombroGlobalTargetAngle - hombroAngle;
+        // llama a la funcion que mueve  el motor los angulos que toca
+        Serial.println("hombroDiffAngle");
+        Serial.println(hombroDiffAngle);
+        motorToAngle(2, hombroDiffAngle);
+
+      }
+
+      if(codoGlobalTargetAngle < 500){
+        codoDiffAngle = codoGlobalTargetAngle - codoAngle;
+        // llama a la funcion que mueve  el motor los angulos que toca
+        Serial.println("codoDiffAngle");
+        Serial.println(codoDiffAngle);
+        motorToAngle(3, codoDiffAngle);
+
+      }
+       
+      float codoDiffAngle = codoGlobalTargetAngle - codoAngle;
 
       Serial.println("baseGlobalTargetAngle: " + String(baseGlobalTargetAngle));
       Serial.println("hombroGlobalTargetAngle: " + String(hombroGlobalTargetAngle));
@@ -322,9 +344,67 @@ void moveToPosition() {
     response = "{\"status\":\"error\",\"message\":\"No data received\"}";
     server.send(400, "application/json", response);
   }
-  Serial.print(" end del moveToPosition");
+  Serial.println(" end del moveToPosition");
 }
+void motorToAngle(int motorid, float motorAngle) {
 
+  if(motorid == 1){
+    Serial.println("if(motorid == 1){");
+    Serial.println(motorid);
+    
+    // for (int i = 0; i <= 255; i++) {
+    //     analogWrite(PWMpin, i);
+    //     delay(10);
+    //   }
+
+    // for (int i = 0; i <= 255; i++) {
+    //   if(digitalRead(LIMIT_SWITCH_BASE_PIN) == LOW){
+    //     motor1BaseInTarget = true;
+    //     baseAngle = 90.0;
+    //     break;
+    //   }
+    //   digitalWrite(STEP_PIN_BASE, HIGH);
+    //   delayMicroseconds(100); 
+    //   digitalWrite(STEP_PIN_BASE, LOW);
+    //   delayMicroseconds(100);
+    // }
+  }
+
+  if(motorid == 2){
+    Serial.println("if(motorid == 2){");
+    Serial.println(motorid);
+    
+    // for (int i = 0; i <= 255; i++){
+    //   if(digitalRead(LIMIT_SWITCH_HOMBRO_PIN) == LOW ){
+    //     motor2HomrboInTarget = true;
+    //     hombroAngle = 180.0;
+    //     break;
+    //   }
+    //   digitalWrite(STEP_PIN_HOMBRO, HIGH);
+    //   delayMicroseconds(200); 
+    //   digitalWrite(STEP_PIN_HOMBRO, LOW);
+    //   delayMicroseconds(200);
+    // }
+  }
+
+  if(motorid == 3){
+    Serial.println("if(motorid == 3){");
+    Serial.println(motorid);
+
+    // for (int i = 0; i <= 255; i++) {
+    //   if(digitalRead(LIMIT_SWITCH_CODO_PIN) == HIGH ){
+    //     motor3CodoInTarget = true;
+    //     codoAngle =100.0;
+    //     break;
+    //   }
+    //   digitalWrite(STEP_PIN_CODO, HIGH);
+    //   delayMicroseconds(200);
+    //   digitalWrite(STEP_PIN_CODO, LOW);
+    //   delayMicroseconds(200);
+    // }
+  }
+
+}
 
 void homing() {
   Serial.println("Homing");
