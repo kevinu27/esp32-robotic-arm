@@ -300,36 +300,21 @@ void moveToPosition() {
       int codoGlobalTargetAngle = receivedData.substring(secondSlash + 1).toInt();
 
       if(baseGlobalTargetAngle < 500){
-        if(baseDiffAngle < 0){
-            digitalWrite(DIR_PIN_BASE, LOW); 
-          }else{
-            digitalWrite(DIR_PIN_BASE, HIGH); 
-
-          }
         Serial.println("baseGlobalTargetAngle");
         Serial.println(baseGlobalTargetAngle);
         motorToAngle(1, baseGlobalTargetAngle);
       }
 
       if(hombroGlobalTargetAngle < 500){
-  
         Serial.println("hombroGlobalTargetAngle enel   if(hombroGlobalTargetAngle < 500){: ");
         Serial.println(hombroGlobalTargetAngle);
         motorToAngle(2, hombroGlobalTargetAngle);
-
       }
 
       if(codoGlobalTargetAngle < 500){
-        
-        if(codoDiffAngle < 0){
-          digitalWrite(DIR_PIN_CODO, HIGH); 
-        }else{
-          digitalWrite(DIR_PIN_CODO, LOW); 
-          }
         Serial.println("codoGlobalTargetAngle");
         Serial.println(codoGlobalTargetAngle);
         motorToAngle(3, codoGlobalTargetAngle);
-
       }
        
       Serial.println("baseGlobalTargetAngle: " + String(baseGlobalTargetAngle));
@@ -363,6 +348,12 @@ void motorToAngle(int motorid, float motorTargetAngle) {
     Serial.println("motorTargetAngle");
     Serial.println(motorTargetAngle);
     baseDiffAngle = motorTargetAngle - baseAngle;
+    if(baseDiffAngle < 0){
+      digitalWrite(DIR_PIN_BASE, LOW); 
+    }else{
+      digitalWrite(DIR_PIN_BASE, HIGH); 
+
+    }
     baseDiffAngle =fabs(((baseDiffAngle* motor3SteppingInt) / 360)*relacionTrasmisionMotor1Base);
   
   for (int i = 0; i < baseDiffAngle; i++) {
@@ -387,7 +378,6 @@ void motorToAngle(int motorid, float motorTargetAngle) {
       }else{
         digitalWrite(DIR_PIN_HOMBRO, HIGH); 
       }
-
     Serial.println("hombroDiffAngle = motorTargetAngle - hombroAngle;");
     Serial.println(hombroDiffAngle);
     hombroDiffAngle = fabs(((hombroDiffAngle* motor2SteppingInt) / 360)*relacionTrasmisionMotor2Hombro);
@@ -410,6 +400,11 @@ void motorToAngle(int motorid, float motorTargetAngle) {
     Serial.println("motorTargetAngle3");
     Serial.println(motorTargetAngle);
     codoDiffAngle = motorTargetAngle - codoAngle;
+    if(codoDiffAngle < 0){
+      digitalWrite(DIR_PIN_CODO, HIGH); 
+    }else{
+      digitalWrite(DIR_PIN_CODO, LOW); 
+      }
     codoDiffAngle = fabs(((codoDiffAngle* motor3SteppingInt) / 360)*relacionTrasmisionMotor3Codo);
     for (int i = 0; i < codoDiffAngle; i++) {
       Serial.println("loop motorToAngle ");
