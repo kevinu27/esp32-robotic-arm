@@ -59,6 +59,8 @@
         float baseDiffAngle;
         float hombroDiffAngle;
         float codoDiffAngle;
+        int homingStage = 0;
+        int homingDelay = 400;
 
 float baseAngle ;
 float hombroAngle ;
@@ -101,7 +103,6 @@ void setup() {
   server.on("/movetoposition", HTTP_OPTIONS, handleOptions);
 
 
-  
   // Start server
   server.begin();
   Serial.println("Server started");
@@ -337,6 +338,7 @@ void moveToPosition() {
   }
   Serial.println(" end del moveToPosition");
 }
+
 void motorToAngle(int motorid, float motorTargetAngle) {
     Serial.println("motorid");
     Serial.println(motorid);
@@ -349,9 +351,9 @@ void motorToAngle(int motorid, float motorTargetAngle) {
     Serial.println(motorTargetAngle);
     baseDiffAngle = motorTargetAngle - baseAngle;
     if(baseDiffAngle < 0){
-      digitalWrite(DIR_PIN_BASE, LOW); 
-    }else{
       digitalWrite(DIR_PIN_BASE, HIGH); 
+    }else{
+      digitalWrite(DIR_PIN_BASE, LOW); 
 
     }
     baseDiffAngle =fabs(((baseDiffAngle* motor3SteppingInt) / 360)*relacionTrasmisionMotor1Base);
@@ -386,9 +388,9 @@ void motorToAngle(int motorid, float motorTargetAngle) {
     for (int i = 0; i < hombroDiffAngle; i++) {
       Serial.println("loop motorToAngle ");
       digitalWrite(STEP_PIN_HOMBRO, HIGH);
-      delayMicroseconds(100); // velocidad del motor
+      delayMicroseconds(50); // velocidad del motor
       digitalWrite(STEP_PIN_HOMBRO, LOW);
-      delayMicroseconds(100);
+      delayMicroseconds(50);
     }
     hombroAngle = motorTargetAngle;
   }
@@ -401,9 +403,9 @@ void motorToAngle(int motorid, float motorTargetAngle) {
     Serial.println(motorTargetAngle);
     codoDiffAngle = motorTargetAngle - codoAngle;
     if(codoDiffAngle < 0){
-      digitalWrite(DIR_PIN_CODO, HIGH); 
-    }else{
       digitalWrite(DIR_PIN_CODO, LOW); 
+    }else{
+      digitalWrite(DIR_PIN_CODO, HIGH); 
       }
     codoDiffAngle = fabs(((codoDiffAngle* motor3SteppingInt) / 360)*relacionTrasmisionMotor3Codo);
     for (int i = 0; i < codoDiffAngle; i++) {
@@ -415,13 +417,10 @@ void motorToAngle(int motorid, float motorTargetAngle) {
     }
       codoAngle = motorTargetAngle;
   }
-
 }
 
 void homing() {
   Serial.println("Homing");
-
-  
   bool motor1BaseInTarget = false;
   bool motor3CodoInTarget = false;
   bool motor2HomrboInTarget = false;
@@ -430,25 +429,25 @@ void homing() {
   bool pinCodo = digitalRead(LIMIT_SWITCH_CODO_PIN);
   bool pinHombro = digitalRead(LIMIT_SWITCH_HOMBRO_PIN);
   
-Serial.println("pinBase");
-Serial.println( pinBase);
-Serial.println("pinCodo");
-Serial.println( pinCodo);
-Serial.println("pinHombro");
-Serial.println(pinHombro);
+  Serial.println("pinBase");
+  Serial.println( pinBase);
+  Serial.println("pinCodo");
+  Serial.println( pinCodo);
+  Serial.println("pinHombro");
+  Serial.println(pinHombro);
   
   if(digitalRead(LIMIT_SWITCH_BASE_PIN) == LOW){
     Serial.print("entro en el if de la base");
     motor1BaseInTarget = true;
     baseAngle = 90.0;
-
   }
+
   if(digitalRead(LIMIT_SWITCH_CODO_PIN) == HIGH ){
     Serial.print("entro en el if de la codo");
     motor3CodoInTarget = true;
     codoAngle =100.0;
-
   }
+
   if(digitalRead(LIMIT_SWITCH_HOMBRO_PIN) == LOW ){
     Serial.print("entro en el if de la hombro");
     hombroAngle = 180.0;
@@ -459,42 +458,116 @@ Serial.println(pinHombro);
   digitalWrite(DIR_PIN_HOMBRO, HIGH); 
   digitalWrite(DIR_PIN_CODO, HIGH); 
 
-  while (motor1BaseInTarget == false ) {
-    if(digitalRead(LIMIT_SWITCH_BASE_PIN) == LOW){
-      motor1BaseInTarget = true;
-      baseAngle = 90.0;
-      break;
-    }
-    digitalWrite(STEP_PIN_BASE, HIGH);
-    delayMicroseconds(200); 
-    digitalWrite(STEP_PIN_BASE, LOW);
-    delayMicroseconds(200);
-  }
+    digitalWrite(DIR_PIN_BASE, LOW);
+    digitalWrite(DIR_PIN_HOMBRO, HIGH); 
+    digitalWrite(DIR_PIN_CODO, HIGH); 
 
-  while (motor3CodoInTarget == false ) {
-      if(digitalRead(LIMIT_SWITCH_CODO_PIN) == HIGH ){
-        motor3CodoInTarget = true;
-        codoAngle =100.0;
-        break;
+    while (motor1BaseInTarget == false ) {
+        if(digitalRead(LIMIT_SWITCH_BASE_PIN) == LOW){
+          motor1BaseInTarget = true;
+          baseAngle = 90.0;
+          break;
+        }
+        digitalWrite(STEP_PIN_BASE, HIGH);
+        delayMicroseconds(homingDelay); 
+        digitalWrite(STEP_PIN_BASE, LOW);
+        delayMicroseconds(homingDelay);
       }
-      digitalWrite(STEP_PIN_CODO, HIGH);
-      delayMicroseconds(200);
-      digitalWrite(STEP_PIN_CODO, LOW);
-      delayMicroseconds(200);
-  }
 
-    while (motor2HomrboInTarget == false ) {
-       if(digitalRead(LIMIT_SWITCH_HOMBRO_PIN) == LOW ){
-        motor2HomrboInTarget = true;
-        hombroAngle = 180.0;
-        break;
+      while (motor3CodoInTarget == false ) {
+          if(digitalRead(LIMIT_SWITCH_CODO_PIN) == HIGH ){
+            motor3CodoInTarget = true;
+            codoAngle =100.0;
+            break;
+          }
+          digitalWrite(STEP_PIN_CODO, HIGH);
+          delayMicroseconds(homingDelay);
+          digitalWrite(STEP_PIN_CODO, LOW);
+          delayMicroseconds(homingDelay);
       }
-      digitalWrite(STEP_PIN_HOMBRO, HIGH);
-      delayMicroseconds(200); 
-      digitalWrite(STEP_PIN_HOMBRO, LOW);
-      delayMicroseconds(200);
-  }
 
+        while (motor2HomrboInTarget == false ) {
+          if(digitalRead(LIMIT_SWITCH_HOMBRO_PIN) == LOW ){
+            motor2HomrboInTarget = true;
+            hombroAngle = 180.0;
+            break;
+          }
+          digitalWrite(STEP_PIN_HOMBRO, HIGH);
+          delayMicroseconds(homingDelay); 
+          digitalWrite(STEP_PIN_HOMBRO, LOW);
+          delayMicroseconds(homingDelay);
+      }
+
+    digitalWrite(DIR_PIN_BASE, HIGH);
+    digitalWrite(DIR_PIN_HOMBRO, LOW); 
+    digitalWrite(DIR_PIN_CODO, LOW);
+    motor1BaseInTarget = false;
+    motor3CodoInTarget = false;
+    motor2HomrboInTarget = false;
+
+      for (int i = 0; i < 300; i++) {
+        digitalWrite(STEP_PIN_BASE, HIGH);
+        delayMicroseconds(homingDelay); 
+        digitalWrite(STEP_PIN_BASE, LOW);
+        delayMicroseconds(homingDelay);
+      }
+
+      for (int i = 0; i < 300; i++) {
+        digitalWrite(STEP_PIN_CODO, HIGH);
+        delayMicroseconds(homingDelay);
+        digitalWrite(STEP_PIN_CODO, LOW);
+        delayMicroseconds(homingDelay);
+      }
+
+      for (int i = 0; i < 300; i++ ) {
+        digitalWrite(STEP_PIN_HOMBRO, HIGH);
+        delayMicroseconds(homingDelay); 
+        digitalWrite(STEP_PIN_HOMBRO, LOW);
+        delayMicroseconds(homingDelay);
+      }
+
+      digitalWrite(DIR_PIN_BASE, LOW);
+      digitalWrite(DIR_PIN_HOMBRO, HIGH); 
+      digitalWrite(DIR_PIN_CODO, HIGH);
+
+      homingDelay = 1000;
+
+     while (motor1BaseInTarget == false ) {
+        if(digitalRead(LIMIT_SWITCH_BASE_PIN) == LOW){
+          motor1BaseInTarget = true;
+          baseAngle = 90.0;
+          break;
+        }
+        digitalWrite(STEP_PIN_BASE, HIGH);
+        delayMicroseconds(400); 
+        digitalWrite(STEP_PIN_BASE, LOW);
+        delayMicroseconds(400);
+      }
+
+      while (motor3CodoInTarget == false ) {
+          if(digitalRead(LIMIT_SWITCH_CODO_PIN) == HIGH ){
+            motor3CodoInTarget = true;
+            codoAngle =100.0;
+            break;
+          }
+          digitalWrite(STEP_PIN_CODO, HIGH);
+          delayMicroseconds(homingDelay);
+          digitalWrite(STEP_PIN_CODO, LOW);
+          delayMicroseconds(homingDelay);
+      }
+
+        while (motor2HomrboInTarget == false ) {
+          if(digitalRead(LIMIT_SWITCH_HOMBRO_PIN) == LOW ){
+            motor2HomrboInTarget = true;
+            hombroAngle = 180.0;
+            break;
+          }
+          digitalWrite(STEP_PIN_HOMBRO, HIGH);
+          delayMicroseconds(homingDelay); 
+          digitalWrite(STEP_PIN_HOMBRO, LOW);
+          delayMicroseconds(homingDelay);
+      }
+      homingDelay = 400;
 }
 
 void moverMotor() {
@@ -524,15 +597,8 @@ void moverMotor() {
       Serial.println("en el if de (motor3Dir == 1): " );
       digitalWrite(DIR_PIN_CODO, HIGH); 
     }
-Serial.println("motor1BaseInTarget "  );
-Serial.println(motor1BaseInTarget);
-Serial.println("motor2HomrboInTarget ");
-Serial.println(motor2HomrboInTarget);
-Serial.println("motor3CodoInTarget "  );
-Serial.println( motor3CodoInTarget  );
   while (motor1BaseInTarget == false || motor2HomrboInTarget == false || motor3CodoInTarget == false) {
-    Serial.println("lopp ");
-
+    // Serial.println("lopp ");
     if(motor1BaseInTarget == false ){
       digitalWrite(STEP_PIN_BASE, HIGH);
       delayMicroseconds(100); 
@@ -541,7 +607,7 @@ Serial.println( motor3CodoInTarget  );
       stepsToMoveWithTRansmision1BaseRemaining = stepsToMoveWithTRansmision1BaseRemaining - 1;
       if(stepsToMoveWithTRansmision1BaseRemaining < 1){
         motor1BaseInTarget = true;
-        if(baseAngle >0){
+        if(baseAngle >0){ // retocar esto, se supone que cuando llega le pone el angulo al que se ha movido pero no me cuadra el if que puse
           baseAngle = baseAngle + motor1AngleInt;
         }
       }
@@ -559,7 +625,7 @@ Serial.println( motor3CodoInTarget  );
       stepsToMoveWithTRansmisionRemaining =stepsToMoveWithTRansmisionRemaining - 1;
       if(stepsToMoveWithTRansmisionRemaining < 1){
         motor2HomrboInTarget = true;
-        if( hombroAngle> 0){
+        if( hombroAngle> 0){// retocar esto, se supone que cuando llega le pone el angulo al que se ha movido pero no me cuadra el if que puse
           hombroAngle = hombroAngle + motor2AngleInt;
         }
       }
@@ -579,7 +645,7 @@ Serial.println( motor3CodoInTarget  );
         Serial.print("******" + stepsToMoveWithTRansmision3CodoRemaining );
         motor3CodoInTarget = true;
       }
-      if(codoAngle < 0){
+      if(codoAngle < 0){// retocar esto, se supone que cuando llega le pone el angulo al que se ha movido pero no me cuadra el if que puse
         codoAngle = codoAngle + motor3AngleInt;
       }
       if(digitalRead(LIMIT_SWITCH_CODO_PIN) == HIGH && motor3Dir == "1"){
